@@ -1,6 +1,6 @@
 # Role
 data "aws_iam_policy_document" "kubernetes_ack_assume" {
-  count = length(var.helm_services)
+  count = var.enabled ? length(var.helm_services) : 0
 
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -24,13 +24,13 @@ data "aws_iam_policy_document" "kubernetes_ack_assume" {
 }
 
 resource "aws_iam_role" "kubernetes_ack" {
-  count              = length(var.helm_services)
+  count              = var.enabled ? length(var.helm_services) : 0
   name               = "${var.cluster_name}-${var.helm_services[count.index].name}-ack"
   assume_role_policy = data.aws_iam_policy_document.kubernetes_ack_assume[count.index].json
 }
 
 resource "aws_iam_role_policy_attachment" "kubernetes_ack" {
-  count      = length(var.helm_services)
+  count      = var.enabled ? length(var.helm_services) : 0
   role       = aws_iam_role.kubernetes_ack[count.index].name
   policy_arn = var.helm_services[count.index].policy_arn
 }
