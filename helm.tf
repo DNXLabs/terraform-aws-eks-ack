@@ -1,6 +1,6 @@
 resource "helm_release" "ack" {
   depends_on = [var.mod_dependency, kubernetes_namespace.ack]
-  count      = length(var.helm_services)
+  count      = var.enabled ? length(var.helm_services) : 0
   name       = "ack-${var.helm_services[count.index].name}-controller"
   chart      = "${path.module}/charts/ack-${var.helm_services[count.index].name}-controller"
   namespace  = var.namespace
