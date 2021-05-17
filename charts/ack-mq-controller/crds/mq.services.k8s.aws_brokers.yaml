@@ -6,20 +6,20 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.0
   creationTimestamp: null
-  name: repositories.ecr.services.k8s.aws
+  name: brokers.mq.services.k8s.aws
 spec:
-  group: ecr.services.k8s.aws
+  group: mq.services.k8s.aws
   names:
-    kind: Repository
-    listKind: RepositoryList
-    plural: repositories
-    singular: repository
+    kind: Broker
+    listKind: BrokerList
+    plural: brokers
+    singular: broker
   scope: Namespaced
   versions:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Repository is the Schema for the Repositories API
+        description: Broker is the Schema for the Brokers API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -34,58 +34,127 @@ spec:
           metadata:
             type: object
           spec:
-            description: RepositorySpec defines the desired state of Repository
+            description: BrokerSpec defines the desired state of Broker
             properties:
-              encryptionConfiguration:
-                description: The encryption configuration for the repository. This
-                  determines how the contents of your repository are encrypted at
-                  rest.
+              authenticationStrategy:
+                type: string
+              autoMinorVersionUpgrade:
+                type: boolean
+              configuration:
+                description: A list of information about the configuration. Does not
+                  apply to RabbitMQ brokers.
                 properties:
-                  encryptionType:
+                  id:
                     type: string
-                  kmsKey:
-                    type: string
+                  revision:
+                    format: int64
+                    type: integer
                 type: object
-              imageScanningConfiguration:
-                description: The image scanning configuration for the repository.
-                  This determines whether images are scanned for known vulnerabilities
-                  after being pushed to the repository.
+              creatorRequestID:
+                type: string
+              deploymentMode:
+                type: string
+              encryptionOptions:
+                description: Encryption options for the broker.
                 properties:
-                  scanOnPush:
+                  kmsKeyID:
+                    type: string
+                  useAWSOwnedKey:
                     type: boolean
                 type: object
-              imageTagMutability:
-                description: The tag mutability setting for the repository. If this
-                  parameter is omitted, the default setting of MUTABLE will be used
-                  which will allow image tags to be overwritten. If IMMUTABLE is specified,
-                  all image tags within the repository will be immutable which will
-                  prevent them from being overwritten.
+              engineType:
                 type: string
-              repositoryName:
-                description: The name to use for the repository. The repository name
-                  may be specified on its own (such as nginx-web-app) or it can be
-                  prepended with a namespace to group the repository into a category
-                  (such as project-a/nginx-web-app).
+              engineVersion:
                 type: string
-              tags:
-                description: The metadata that you apply to the repository to help
-                  you categorize and organize them. Each tag consists of a key and
-                  an optional value, both of which you define. Tag keys can have a
-                  maximum character length of 128 characters, and tag values can have
-                  a maximum length of 256 characters.
-                items:
-                  properties:
-                    key:
+              hostInstanceType:
+                type: string
+              ldapServerMetadata:
+                description: The metadata of the LDAP server used to authenticate
+                  and authorize connections to the broker. Currently not supported
+                  for RabbitMQ engine type.
+                properties:
+                  hosts:
+                    items:
                       type: string
-                    value:
+                    type: array
+                  roleBase:
+                    type: string
+                  roleName:
+                    type: string
+                  roleSearchMatching:
+                    type: string
+                  roleSearchSubtree:
+                    type: boolean
+                  serviceAccountPassword:
+                    type: string
+                  serviceAccountUsername:
+                    type: string
+                  userBase:
+                    type: string
+                  userRoleName:
+                    type: string
+                  userSearchMatching:
+                    type: string
+                  userSearchSubtree:
+                    type: boolean
+                type: object
+              logs:
+                description: The list of information about logs to be enabled for
+                  the specified broker.
+                properties:
+                  audit:
+                    type: boolean
+                  general:
+                    type: boolean
+                type: object
+              maintenanceWindowStartTime:
+                description: The scheduled time period relative to UTC during which
+                  Amazon MQ begins to apply pending updates or patches to the broker.
+                properties:
+                  dayOfWeek:
+                    type: string
+                  timeOfDay:
+                    type: string
+                  timeZone:
+                    type: string
+                type: object
+              name:
+                type: string
+              publiclyAccessible:
+                type: boolean
+              securityGroups:
+                items:
+                  type: string
+                type: array
+              storageType:
+                type: string
+              subnetIDs:
+                items:
+                  type: string
+                type: array
+              tags:
+                additionalProperties:
+                  type: string
+                type: object
+              users:
+                items:
+                  description: A user associated with the broker.
+                  properties:
+                    consoleAccess:
+                      type: boolean
+                    groups:
+                      items:
+                        type: string
+                      type: array
+                    password:
+                      type: string
+                    username:
                       type: string
                   type: object
                 type: array
-            required:
-            - repositoryName
             type: object
           status:
-            description: RepositoryStatus defines the observed state of Repository
+            description: BrokerStatus defines the observed state of Broker
             properties:
               ackResourceMetadata:
                 description: All CRs managed by ACK have a common `Status.ACKResourceMetadata`
@@ -110,6 +179,24 @@ spec:
                 required:
                 - ownerAccountID
                 type: object
+              brokerID:
+                type: string
+              brokerInstances:
+                items:
+                  description: Returns information about all brokers.
+                  properties:
+                    consoleURL:
+                      type: string
+                    endpoints:
+                      items:
+                        type: string
+                      type: array
+                    ipAddress:
+                      type: string
+                  type: object
+                type: array
+              brokerState:
+                type: string
               conditions:
                 description: All CRS managed by ACK have a common `Status.Conditions`
                   member that contains a collection of `ackv1alpha1.Condition` objects
@@ -143,19 +230,6 @@ spec:
                   - type
                   type: object
                 type: array
-              createdAt:
-                description: The date and time, in JavaScript date format, when the
-                  repository was created.
-                format: date-time
-                type: string
-              registryID:
-                description: The AWS account ID associated with the registry that
-                  contains the repository.
-                type: string
-              repositoryURI:
-                description: The URI for the repository. You can use this URI for
-                  container image push and pull operations.
-                type: string
             required:
             - ackResourceMetadata
             - conditions
