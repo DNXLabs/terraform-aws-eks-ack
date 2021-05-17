@@ -12,7 +12,7 @@ services = [
     },
     {
         'name': 'elasticache',
-        'version': 'v0.0.2'
+        'version': 'v0.0.3'
     },
     {
         'name': 'sns',
@@ -20,7 +20,7 @@ services = [
     },
     {
         'name': 'ecr',
-        'version': 'v0.0.2'
+        'version': 'v0.0.3'
     },
     {
         'name': 'dynamodb',
@@ -29,6 +29,10 @@ services = [
     {
         'name': 'apigatewayv2',
         'version': 'v0.0.2'
+    },
+    {
+        'name': 'mq',
+        'version': 'v0.0.3'
     }
 ]
 
