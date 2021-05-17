@@ -65,6 +65,11 @@ variable "helm_services" {
       name       = "apigatewayv2"
       policy_arn = "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator"
       settings   = {}
+    },
+    {
+      name       = "mq"
+      policy_arn = "arn:aws:iam::aws:policy/AmazonMQApiFullAccess"
+      settings   = {}
     }
   ]
 }
