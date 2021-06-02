@@ -20,13 +20,8 @@ resource "helm_release" "ack" {
     value = aws_iam_role.kubernetes_ack[count.index].arn
   }
 
-  dynamic "set" {
-    for_each = var.settings
-
-    content {
-      name  = set.key
-      value = set.value
-    }
-  }
+  values = [
+    yamlencode(var.settings)
+  ]
 
 }
