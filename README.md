@@ -136,7 +136,7 @@ spec:
 | helm\_services | n/a | <pre>list(object({<br>    name       = string<br>    policy_arn = string<br>    settings   = map(any)<br>  }))</pre> | <pre>[<br>  {<br>    "name": "s3",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonS3FullAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "sns",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonSNSFullAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "sfn",<br>    "policy_arn": "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "elasticache",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "ecr",<br>    "policy_arn": "arn:aws:iam::aws:policy/AdministratorAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "dynamodb",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "apigatewayv2",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator",<br>    "settings": {}<br>  },<br>  {<br>    "name": "mq",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonMQApiFullAccess",<br>    "settings": {}<br>  }<br>]</pre> | no |
 | mod\_dependency | Dependence variable binds all AWS resources allocated by this module, dependent modules reference this variable. | `any` | `null` | no |
 | namespace | Kubernetes namespace to deploy ACK Helm chart. | `string` | `"ack-system"` | no |
-| settings | Additional settings which will be passed to the Helm chart values. | `map(any)` | `{}` | no |
+| settings | Additional settings which will be passed to the Helm chart values. | `map` | `{}` | no |
 
 ## Outputs
 
