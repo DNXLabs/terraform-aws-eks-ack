@@ -14,6 +14,12 @@ variable "aws_region" {
   description = "AWS region where services are stored."
 }
 
+variable "aws_partition" {
+  type        = string
+  description = "AWS Partition where services are stored."
+  default     = "aws"
+}
+
 variable "cluster_identity_oidc_issuer" {
   type        = string
   description = "The OIDC Identity issuer for the cluster."
@@ -27,48 +33,16 @@ variable "cluster_identity_oidc_issuer_arn" {
 variable "helm_services" {
   type = list(object({
     name       = string
-    policy_arn = string
-    settings   = map(any)
+    # Version is required to pull from public.ecr.aws. You can find the release in the specific repository in https://github.com/aws-controllers-k8s/
+    version    = string
+    policy_arn = optional(string)
+    settings   = optional(map(any))
   }))
   default = [
     {
       name       = "s3"
+      version    = "v0.1.6"
       policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-      settings   = {}
-    },
-    {
-      name       = "sns"
-      policy_arn = "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
-      settings   = {}
-    },
-    {
-      name       = "sfn"
-      policy_arn = "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess"
-      settings   = {}
-    },
-    {
-      name       = "elasticache"
-      policy_arn = "arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess"
-      settings   = {}
-    },
-    {
-      name       = "ecr"
-      policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-      settings   = {}
-    },
-    {
-      name       = "dynamodb"
-      policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-      settings   = {}
-    },
-    {
-      name       = "apigatewayv2"
-      policy_arn = "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator"
-      settings   = {}
-    },
-    {
-      name       = "mq"
-      policy_arn = "arn:aws:iam::aws:policy/AmazonMQApiFullAccess"
       settings   = {}
     }
   ]
