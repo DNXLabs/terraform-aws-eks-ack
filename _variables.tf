@@ -33,7 +33,8 @@ variable "cluster_identity_oidc_issuer_arn" {
 variable "helm_services" {
   type = list(object({
     name       = string
-    version    = optional(string)
+    # Version is required to pull from public.ecr.aws. You can find the release in the specific repository in https://github.com/aws-controllers-k8s/
+    version    = string
     policy_arn = optional(string)
     settings   = optional(map(any))
   }))
