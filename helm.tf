@@ -1,9 +1,11 @@
 resource "helm_release" "ack" {
-  depends_on = [var.mod_dependency, kubernetes_namespace.ack]
+  depends_on = [var.mod_dependency]
   count      = var.enabled ? length(var.helm_services) : 0
   name       = "ack-${var.helm_services[count.index].name}-controller"
-  chart      = "${path.module}/charts/ack-${var.helm_services[count.index].name}-controller"
+  chart      = "oci://public.ecr.aws/aws-controllers-k8s/${var.helm_services[count.index].name}-chart"
   namespace  = var.namespace
+  create_namespace = true
+  version    = var.helm_services[count.index].version
 
   set {
     name  = "aws.region"
