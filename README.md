@@ -4,58 +4,27 @@
 [![LICENSE](https://img.shields.io/github/license/DNXLabs/terraform-aws-eks-ack)](https://github.com/DNXLabs/terraform-aws-eks-ack/blob/master/LICENSE)
 
 
-Terraform module for deploying Kubernetes [AWS Controllers for Kubernetes (ACK)](https://aws.github.io/aws-controllers-k8s/), lets you define and use AWS service resources directly from Kubernetes.
+Terraform module for deploying Kubernetes [AWS Controllers for Kubernetes (ACK)](https://aws.github.io/aws-controllers-k8s/); letting you define and use AWS service resources directly from Kubernetes.
 
-With ACK, you can take advantage of AWS managed services for your Kubernetes applications without needing to define resources outside of the cluster or run services that provide supporting capabilities like databases or message queues within the cluster.
+With ACK, you can take advantage of AWS managed services for your Kubernetes applications without needing to define resources outside the cluster or run services that provide supporting capabilities like databases or message queues within the cluster.
 
 ## Usage
 
-```bash
+```hcl
 module "ack" {
-  source = "git::https://github.com/DNXLabs/terraform-aws-eks-ack.git?ref=0.1.1"
+  source = "git::https://github.com/DNXLabs/terraform-aws-eks-ack.git?ref=0.3.0"
 
   enabled = true
 
-  cluster_name                     = module.eks_cluster.cluster_id
+  cluster_name                     = module.eks_cluster.cluster_name
   cluster_identity_oidc_issuer     = module.eks_cluster.cluster_oidc_issuer_url
   cluster_identity_oidc_issuer_arn = module.eks_cluster.oidc_provider_arn
   aws_region                       = data.aws_region.current.name
 
   helm_services = [
     {
-      name          = "s3"
-      policy_arn    = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-      settings      = {}
-    },
-    {
-      name          = "sns"
-      policy_arn    = "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
-      settings      = {}
-    },
-    {
-      name          = "sfn"
-      policy_arn    = "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess"
-      settings      = {}
-    },
-    {
-      name          = "elasticache"
-      policy_arn    = "arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess"
-      settings      = {}
-    },
-    {
-      name          = "ecr"
-      policy_arn    = "arn:aws:iam::aws:policy/AdministratorAccess"
-      settings      = {}
-    },
-    {
-      name          = "dynamodb"
-      policy_arn    = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-      settings      = {}
-    },
-    {
-      name          = "apigatewayv2"
-      policy_arn    = "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator"
-      settings      = {}
+      name     = "s3"
+      version  = "v0.1.6"
     }
   ]
 }
@@ -106,37 +75,28 @@ spec:
 
 <!--- BEGIN_TF_DOCS --->
 
-## Requirements
-
-| Name | Version |
-|------|---------|
-| terraform | >= 0.13 |
-| aws | >= 3.13, < 4.0 |
-| helm | >= 1.0, < 3.0 |
-| kubernetes | >= 1.10.0, < 3.0.0 |
-
 ## Providers
 
-| Name | Version |
-|------|---------|
-| aws | >= 3.13, < 4.0 |
-| helm | >= 1.0, < 3.0 |
-| kubernetes | >= 1.10.0, < 3.0.0 |
-
+| Name      | Version  |
+|-----------|----------|
+| terraform | \>= 0.13 |
+| aws       | \>= 4.40 |
+| helm      | \>= 2.8  |
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| aws\_region | AWS region where services are stored. | `string` | n/a | yes |
-| cluster\_identity\_oidc\_issuer | The OIDC Identity issuer for the cluster. | `string` | n/a | yes |
-| cluster\_identity\_oidc\_issuer\_arn | The OIDC Identity issuer ARN for the cluster that can be used to associate IAM roles with a service account. | `string` | n/a | yes |
-| cluster\_name | The name of the cluster | `string` | n/a | yes |
-| create\_namespace | Whether to create Kubernetes namespace with name defined by `namespace`. | `bool` | `true` | no |
-| enabled | Variable indicating whether deployment is enabled. | `bool` | `true` | no |
-| helm\_services | n/a | <pre>list(object({<br>    name       = string<br>    policy_arn = string<br>    settings   = map(any)<br>  }))</pre> | <pre>[<br>  {<br>    "name": "s3",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonS3FullAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "sns",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonSNSFullAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "sfn",<br>    "policy_arn": "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "elasticache",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "ecr",<br>    "policy_arn": "arn:aws:iam::aws:policy/AdministratorAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "dynamodb",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",<br>    "settings": {}<br>  },<br>  {<br>    "name": "apigatewayv2",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator",<br>    "settings": {}<br>  },<br>  {<br>    "name": "mq",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonMQApiFullAccess",<br>    "settings": {}<br>  }<br>]</pre> | no |
-| mod\_dependency | Dependence variable binds all AWS resources allocated by this module, dependent modules reference this variable. | `any` | `null` | no |
-| namespace | Kubernetes namespace to deploy ACK Helm chart. | `string` | `"ack-system"` | no |
-| settings | Additional settings which will be passed to the Helm chart values. | `map` | `{}` | no |
+| Name                                 | Description                                                                                                      | Type                                                                                                                 | Default                                                                                                                                                                   | Required |
+|--------------------------------------|------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|
+| aws\_region                          | AWS region where services are stored.                                                                            | `string`                                                                                                             | n/a                                                                                                                                                                       |   yes    |
+| aws\_partition                       | AWS Partition where services are stored.                                                                         | `string`                                                                                                             | `aws`                                                                                                                                                                     |    no    |
+| cluster\_identity\_oidc\_issuer      | The OIDC Identity issuer for the cluster.                                                                        | `string`                                                                                                             | n/a                                                                                                                                                                       |   yes    |
+| cluster\_identity\_oidc\_issuer\_arn | The OIDC Identity issuer ARN for the cluster that can be used to associate IAM roles with a service account.     | `string`                                                                                                             | n/a                                                                                                                                                                       |   yes    |
+| cluster\_name                        | The name of the cluster                                                                                          | `string`                                                                                                             | n/a                                                                                                                                                                       |   yes    |
+| create\_namespace                    | Whether to create Kubernetes namespace with name defined by `namespace`.                                         | `bool`                                                                                                               | `true`                                                                                                                                                                    |    no    |
+| enabled                              | Variable indicating whether deployment is enabled.                                                               | `bool`                                                                                                               | `true`                                                                                                                                                                    |    no    |
+| helm\_services                       | n/a                                                                                                              | <pre>list(object({<br>    name       = string<br>    policy_arn = string<br>    settings   = map(any)<br>  }))</pre> | <pre>[<br>  {<br>    "name": "s3",<br>    "policy_arn": "arn:aws:iam::aws:policy/AmazonS3FullAccess",<br>    "version": "v0.1.6",<br>    "settings": {}<br>  }<br>]</pre> |    no    |
+| mod\_dependency                      | Dependence variable binds all AWS resources allocated by this module, dependent modules reference this variable. | `any`                                                                                                                | `null`                                                                                                                                                                    |    no    |
+| namespace                            | Kubernetes namespace to deploy ACK Helm chart.                                                                   | `string`                                                                                                             | `"ack-system"`                                                                                                                                                            |    no    |
+| settings                             | Additional settings which will be passed to the Helm chart values.                                               | `map`                                                                                                                | `{}`                                                                                                                                                                      |    no    |
 
 ## Outputs
 
